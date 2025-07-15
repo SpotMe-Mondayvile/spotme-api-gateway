@@ -5,7 +5,7 @@ EXPOSE 3000
 EXPOSE 5000
 EXPOSE 50000
 
-COPY target .
+COPY . .
 
 RUN  mvn package -ntp -Dmaven.test.skip
 

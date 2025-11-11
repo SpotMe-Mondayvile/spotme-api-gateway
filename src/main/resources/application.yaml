@@ -1,67 +1,70 @@
 spring:
   application:
-    - name: spotme-api-gateway
+     name: spotme-api-gateway
   cloud:
     gateway:
       globalcors:
         corsConfigurations:
           '[/**]':
-            allowedOrigins: "*"
-            allowedMethods: "*"
-            allowedHeaders: "*"
+            allowedOriginPatterns: "*"
+#            allowedMethods: "*"
+#            # allowedHeaders: "*"
+#            allowCredentials: true # Allow credentials (e.g., cookies, authorization headers)
+
       routes:
         - id: auth-svc-route
           uri: ${AUTH_SVC_URL:http://localhost:8081}
           predicates:
-            - Path=/api/auth**
+            - Path=/api/auth/**
           filters:
-            - RewritePath=/auth(?<segment>.*), /api/v1/auth$\{segment}
+            - RewritePath=/api/auth(?<segment>.*), /api/v1/auth$\{segment}
             - AddResponseHeader=X-Powered-By,SpotMe Gateway Service
+
+        - id: auth-swagger-docs
+          uri: ${AUTH_SVC_URL:http://localhost:8081}
+          predicates:
+              - Path=/auth-docs/** # Client hits this path on the Gateway
+          filters:
+              # This rewrites the path to hit the service's internal Swagger UI files
+              - RewritePath=/auth-docs(?<segment>.*), /swagger-ui$\{segment}
+              - AddResponseHeader=X-Powered-By,SpotMe Gateway Service
 
         - id: user-svc-route
           uri: ${USER_SVC_URL:http://localhost:8082}
           predicates:
-            - Path=/api/v1/user/**
+            - Path=/api/user/**
           filters:
-            - RewritePath=/info(?<segment>.*), /api/v1/info$\{segment}
+            - RewritePath=/api/user(?<segment>.*), /api/v1/user$\{segment}
             - AddResponseHeader=X-Powered-By,SpotMe Gateway Service
 
         - id: match-svc-route
           uri: ${MATCH_SVC_URL:http://localhost:8083}
           predicates:
-            - Path=/api/v1/match/**
+            - Path=/api/match/**
           filters:
-            - RewritePath=/info(?<segment>.*), /api/v1/info$\{segment}
+            - RewritePath=/api/match(?<segment>.*), /api/v1/match$\{segment}
             - AddResponseHeader=X-Powered-By,SpotMe Gateway Service
 
         - id: gym-svc-route
           uri: ${GYM_SVC_URL:http://localhost:8084}
           predicates:
-            - Path=/api/v1/gym/**
+            - Path=/api/gym/**
           filters:
-            - RewritePath=/info(?<segment>.*), /api/v1/info$\{segment}
+            - RewritePath=/api/gym(?<segment>.*), /api/v1/gym$\{segment}
             - AddResponseHeader=X-Powered-By,SpotMe Gateway Service
 
         - id: friends-svc-route
           uri: ${FRIENDS_SVC_URL:http://localhost:8085}
           predicates:
-            - Path=/api/v1/friends/**
+            - Path=/api/friends/**
           filters:
-            - RewritePath=/info(?<segment>.*), /api/v1/info$\{segment}
-            - AddResponseHeader=X-Powered-By,SpotMe Gateway Service
+            - RewritePath=/api/friends(?<segment>.*), /api/v1/friends\{segment}
+            - AddResponseHeader=X-Pow ered-By,SpotMe Gateway Service
 
         - id: posts-route
           uri: ${POSTS_ROUTE_URI:http://localhost:8086}
           predicates:
             - Path=/posts/**
-          filters:
-            - RewritePath=/info(?<segment>.*), /api/v1/info$\{segment}
-            - AddResponseHeader=X-Powered-By,SpotMe Gateway Service
-
-        - id: google-route
-          uri: http://localhost:8080
-          predicates:
-            - Path=/swagger-ui/index.html#/**
           filters:
             - RewritePath=/info(?<segment>.*), /api/v1/info$\{segment}
             - AddResponseHeader=X-Powered-By,SpotMe Gateway Service
@@ -72,13 +75,5 @@ spring:
             - Path=/info**
           filters:
             - RewritePath=/info(?<segment>.*), /api/v1/info$\{segment} #/api/v1/movies/$\{segment}
-
-        - id: swagger-route
-          uri: http://localhost:8080
-          predicates:
-            - Path=/swagger**
-          filters:
-            - RewritePath=^/swagger(?<segment>.*),/swagger-ui/index.html#/$\{segment} #/api/v1/movies/$\{segment}
 server:
-  port: 8100
-
+  port: 8080

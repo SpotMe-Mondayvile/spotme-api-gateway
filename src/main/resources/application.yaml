@@ -3,13 +3,15 @@ spring:
      name: spotme-api-gateway
   cloud:
     gateway:
+      mvc:
+        enabled: true
       globalcors:
         corsConfigurations:
           '[/**]':
             allowedOriginPatterns: "*"
-#            allowedMethods: "*"
-#            # allowedHeaders: "*"
-#            allowCredentials: true # Allow credentials (e.g., cookies, authorization headers)
+            allowedMethods: "*"
+            # allowedHeaders: "*"
+            allowCredentials: true # Allow credentials (e.g., cookies, authorization headers)
 
       routes:
         - id: auth-svc-route
@@ -20,14 +22,18 @@ spring:
             - RewritePath=/api/auth(?<segment>.*), /api/v1/auth$\{segment}
             - AddResponseHeader=X-Powered-By,SpotMe Gateway Service
 
-        - id: auth-swagger-docs
-          uri: ${AUTH_SVC_URL:http://localhost:8081}
+        - id: rest-svc-route
+          uri: ${REST_SVC_URL:http://localhost:8087}
           predicates:
-              - Path=/auth-docs/** # Client hits this path on the Gateway
+            - Path=/rest/**
           filters:
-              # This rewrites the path to hit the service's internal Swagger UI files
-              - RewritePath=/auth-docs(?<segment>.*), /swagger-ui$\{segment}
-              - AddResponseHeader=X-Powered-By,SpotMe Gateway Service
+            - RewritePath=/rest(?<segment>.*), $\{segment}
+            - AddResponseHeader=X-Powered-By,SpotMe Gateway Service
+
+        - id: rest-swagger-docs
+          uri: ${REST_SVC_URL:http://localhost:8087}
+          predicates:
+              - Path=/rest-docs/** # Client hits this path on the Gateway
 
         - id: user-svc-route
           uri: ${USER_SVC_URL:http://localhost:8082}
@@ -75,5 +81,51 @@ spring:
             - Path=/info**
           filters:
             - RewritePath=/info(?<segment>.*), /api/v1/info$\{segment} #/api/v1/movies/$\{segment}
+springdoc:
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+  swagger-ui:
+    enabled: true
+    config-url: /v3/api-docs/swagger-config
+    urls:
+      -   name: gateway-service
+          url: /v3/api-docs
+
+      -   name: auth-service
+          url: /auth/api-docs
+
+      -   name: rest-service
+          url: /rest/api-docs
+
+      -   name: user-service
+          url: /api-docs
+
+      -   name: match-service
+          url: /api-docs
+
+      -   name: gym-service
+          url: /api-docs
+
+      -   name: friends-service
+          url: /api-docs
+
+      -   name: posts-service
+          url: /api-docs
+
+      -   name: info-service
+          url: /api-docs
+#  api-docs:
+#    enabled: true
+#    path: /api-docs
+#  swagger-ui:
+#    enabled: true
+#    config-url: /api-docs
+  #  urls:
+  #    -   name: gateway-service
+  #        url:  /swagger-ui-custom.html
+  #    -   name: rest-service
+  #        url:  /rest/swagger-ui-custom.html
 server:
   port: 8080
+

@@ -76,8 +76,8 @@ pipeline{
                                 def smweb_l = docker.build("spotme/${appName}:${s_branch}","./")
 
                                 // or docker.build, etc.
-                                sh "echo IMAGE_NAME=${smweb.imageName()} >> pipeline.properties"
-                                sh "echo IMAGE_NAME=${smweb.imageName()} >> imageRef.properties"
+                                sh "echo IMAGE_NAME=${smweb_l.imageName()} >> pipeline.properties"
+                                sh "echo IMAGE_NAME=${smweb_l.imageName()} >> imageRef.properties"
                                 smweb_l.push()
                             }
                         }

@@ -1,9 +1,9 @@
 def s_branch = env.BRANCH_NAME as String
 def registry = "containerregistry.spot-me-app.com/spotme/" as String
 def localRegistry = "http://192.168.1.227:8082/" as String
-def localRegistryUrl = "containerregistry.magus.lab" as String
-def registryUrl = "http://containerregistry.magus.lab" as String
-def registryBase = "containerregistry.magus.lab" as String
+def localRegistryUrl = "containerregistry.magus.lab/" as String
+def registryUrl = "https://containerregistry.mts-lab.net" as String
+def registryBase = "containerregistry.mts-lab.net" as String
 def appName = "spotme-api-gateway-svc" as String
 s_branch = s_branch.replaceAll("/","_")
 

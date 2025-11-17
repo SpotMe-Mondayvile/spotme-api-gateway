@@ -12,9 +12,10 @@ public class SpotmeApiGatewayApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(SpotmeApiGatewayApplication.class, args);
 	}
-//	@Bean
-//	public HttpClient httpClient() {
-//		return HttpClient.create().resolver(DefaultAddressResolverGroup.INSTANCE);
-//	}
+	
+	@Bean
+	public HttpClient httpClient() {
+		return HttpClient.create().resolver(DefaultAddressResolverGroup.INSTANCE);
+	}
 
 }

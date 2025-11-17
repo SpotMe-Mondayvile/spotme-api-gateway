@@ -2,7 +2,7 @@ def s_branch = env.BRANCH_NAME as String
 def registry = "containerregistry.spot-me-app.com/spotme/" as String
 def localRegistry = "http://192.168.1.227:8082/" as String
 def localRegistryUrl = "http://192.168.1.227:8082" as String
-def registryUrl = "https://containerregistry.spot-me-app.com" as String
+def registryUrl = "http://containerregistry.magus.lab" as String
 def appName = "spotme-api-gateway-svc" as String
 s_branch = s_branch.replaceAll("/","_")
 
@@ -58,12 +58,15 @@ pipeline{
                                 def smweb = docker.build("spotme/${appName}:${s_branch}","./")
                                 //"docker push ${registry}${appName}:${s_branch}"
 
-                                // or docker.build, etc.
-                                sh "echo IMAGE_NAME=${smweb.imageName()} >> pipeline.properties"
-                                sh "echo IMAGE_NAME=${smweb.imageName()} >> imageRef.properties"
-                                smweb.push()
-                                // echo DOCKER_IMAGE_NAME='''+image_name+''' > pipeline.properties
+                                def smweb_l = docker.build("spotme/${appName}:${s_branch}","./")
 
+                                // or docker.build, etc.
+                                def remoteImage = "${registryBase}/spotme/${appName}:${s_branch}"
+                                smweb_l.push()
+                                sh "echo LOCAL_IMAGE_NAME=${smweb_l.imageName()} >> pipeline.properties"
+                                sh "echo LOCAL_IMAGE_NAME=${smweb_l.imageName()} >> imageRef.properties"
+                                sh "echo IMAGE_NAME=${remoteImage} >> pipeline.properties"
+                                sh "echo IMAGE_NAME=${remoteImage} >> imageRef.properties"
                             }
                         }catch(e){
                             echo 'Tunnel URL did not work for image push, trying to push via intranet'
@@ -72,9 +75,9 @@ pipeline{
                                 def smweb_l = docker.build("spotme/${appName}:${s_branch}","./")
 
                                 // or docker.build, etc.
-                                smweb_l.push()
-                                sh "echo LOCAL_IMAGE_NAME=${smweb_l.imageName()} >> pipeline.properties"
-                                sh "echo LOCAL_IMAGE_NAME=${smweb_l.imageName()} >> imageRef.properties"
+                                sh "echo IMAGE_NAME=${smweb.imageName()} >> pipeline.properties"
+                                sh "echo IMAGE_NAME=${smweb.imageName()} >> imageRef.properties"
+                                smweb.push()
                             }
                         }
                     }

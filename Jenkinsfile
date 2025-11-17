@@ -93,8 +93,9 @@ pipeline{
                         def mvn = tool 'maven';
                         try{
                             withSonarQubeEnv() {
-                                sh "${mvn}/bin/mvn clean verify sonar:sonar -Dsonar.projectKey=spotme -Dsonar.projectName='spotme'"
-                            }}catch (e){
+                            sh "./mvnw clean verify sonar:sonar -Dsonar.projectKey='${appName}' -Dsonar.projectName='${appName}' -Dsonar.branch.name=${env.BRANCH_NAME}"                            
+                             }
+                            }catch (e){
                             println "Sonar Analysis could not operate"
                         }
                     }

@@ -62,11 +62,12 @@ pipeline{
 
                                 // or docker.build, etc.
                                 def remoteImage = "${registryBase}/spotme/${appName}:${s_branch}"
-                                smweb_l.push()
+                                
                                 sh "echo LOCAL_IMAGE_NAME=${smweb_l.imageName()} >> pipeline.properties"
                                 sh "echo LOCAL_IMAGE_NAME=${smweb_l.imageName()} >> imageRef.properties"
                                 sh "echo IMAGE_NAME=${remoteImage} >> pipeline.properties"
                                 sh "echo IMAGE_NAME=${remoteImage} >> imageRef.properties"
+                                smweb_l.push()
                             }
                         }catch(e){
                             echo 'Tunnel URL did not work for image push, trying to push via intranet'
@@ -77,7 +78,7 @@ pipeline{
                                 // or docker.build, etc.
                                 sh "echo IMAGE_NAME=${smweb.imageName()} >> pipeline.properties"
                                 sh "echo IMAGE_NAME=${smweb.imageName()} >> imageRef.properties"
-                                smweb.push()
+                                smweb_l.push()
                             }
                         }
                     }

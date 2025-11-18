@@ -54,7 +54,22 @@ pipeline{
                     dir("./"){
                         try{
                             docker.withRegistry(registryUrl,'spotme-containerregistry') {
-                                // sh "docker system prune -a -f"
+                                                              
+                                def smweb_l = docker.build("spotme/${appName}:${s_branch}","./")
+
+                                def remoteImage = "${registryBase}/spotme/${appName}:${s_branch}"
+                                
+                                // or docker.build, etc.
+                                sh "echo LOCAL_IMAGE_NAME=${smweb_l.imageName()} >> pipeline.properties"
+                                sh "echo LOCAL_IMAGE_NAME=${smweb_l.imageName()} >> imageRef.properties"
+                                sh "echo IMAGE_NAME=${remoteImage} >> pipeline.properties"
+                                sh "echo IMAGE_NAME=${remoteImage} >> imageRef.properties"
+                                smweb_l.push()
+                                
+                            }
+                        }catch(e){
+                            echo 'Tunnel URL did not work for image push, trying to push via intranet'
+                            docker.withRegistry(localRegistryUrl,'spotme-containerregistry') {
 
                                 def smweb = docker.build("spotme/${appName}:${s_branch}","./")
                                 //"docker push ${registry}${appName}:${s_branch}"
@@ -63,22 +78,9 @@ pipeline{
 
                                 // or docker.build, etc.
                                 def remoteImage = "${registryBase}/spotme/${appName}:${s_branch}"
-                                
-                                sh "echo LOCAL_IMAGE_NAME=${smweb_l.imageName()} >> pipeline.properties"
-                                sh "echo LOCAL_IMAGE_NAME=${smweb_l.imageName()} >> imageRef.properties"
-                                sh "echo IMAGE_NAME=${remoteImage} >> pipeline.properties"
-                                sh "echo IMAGE_NAME=${remoteImage} >> imageRef.properties"
+
                                 smweb_l.push()
-                            }
-                        }catch(e){
-                            echo 'Tunnel URL did not work for image push, trying to push via intranet'
-                            docker.withRegistry(localRegistryUrl,'spotme-containerregistry') {
 
-                                def smweb_l = docker.build("spotme/${appName}:${s_branch}","./")
-
-                                def remoteImage = "${registryBase}/spotme/${appName}:${s_branch}"
-                                
-                                // or docker.build, etc.
                                 sh "echo LOCAL_IMAGE_NAME=${smweb_l.imageName()} >> pipeline.properties"
                                 sh "echo LOCAL_IMAGE_NAME=${smweb_l.imageName()} >> imageRef.properties"
                                 sh "echo IMAGE_NAME=${remoteImage} >> pipeline.properties"

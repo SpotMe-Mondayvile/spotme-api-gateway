@@ -30,6 +30,14 @@ spring:
             - RewritePath=/rest(?<segment>.*), $\{segment}
             - AddResponseHeader=X-Powered-By,SpotMe Gateway Service
 
+        - id: auth-svc-base-route
+          uri: ${AUTH_SVC_URL:http://localhost:8087}
+          predicates:
+            - Path=/auth/**
+          filters:
+            - RewritePath=/auth(?<segment>.*), $\{segment}
+            - AddResponseHeader=X-Powered-By,SpotMe Gateway Service    
+
         - id: rest-swagger-docs
           uri: ${REST_SVC_URL:http://localhost:8087}
           predicates:

@@ -76,9 +76,13 @@ pipeline{
 
                                 def smweb_l = docker.build("spotme/${appName}:${s_branch}","./")
 
+                                def remoteImage = "${registryBase}/spotme/${appName}:${s_branch}"
+                                
                                 // or docker.build, etc.
-                                sh "echo IMAGE_NAME=${smweb_l.imageName()} >> pipeline.properties"
-                                sh "echo IMAGE_NAME=${smweb_l.imageName()} >> imageRef.properties"
+                                sh "echo LOCAL_IMAGE_NAME=${smweb_l.imageName()} >> pipeline.properties"
+                                sh "echo LOCAL_IMAGE_NAME=${smweb_l.imageName()} >> imageRef.properties"
+                                sh "echo IMAGE_NAME=${remoteImage} >> pipeline.properties"
+                                sh "echo IMAGE_NAME=${remoteImage} >> imageRef.properties"
                                 smweb_l.push()
                             }
                         }

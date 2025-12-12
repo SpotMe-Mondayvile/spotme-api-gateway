@@ -96,7 +96,7 @@ pipeline{
         stage('SonarQube Analysis') {
             steps {
                 script {
-                    dir("spotme-rest/"){
+                    dir("./"){
                         def mvn = tool 'maven';
                         try{
                             withSonarQubeEnv() {
